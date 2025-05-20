@@ -21,7 +21,7 @@ def categorize(tweet_text):
         f"And these categories: {categories}\n\n"
         "Classify the tweet into one of the categories. "
         "Respond strictly in JSON format as: "
-        "{\"category\": <chosen_category_or_None>, \"confidence\": <confidence_percentage>} "
+        "{\"category\": <chosen_category_or_None>, \"confidence\": <confidence_score(between 0 and 1 eg 0.94)>} "
         "If the tweet does not fit any category, set category to null and confidence to a percentage. "
         "Do not return anything except the JSON."
     )
