@@ -14,26 +14,31 @@ def get_categories():
     categories = db['categories']
     return [x['category_name'] for x in categories.find()]
 
-def categorize(tweet_text):    
+
+def categorize(tweet_text):
     categories = get_categories()
+    
     prompt = (
         f"Given the following tweet:\n\"{tweet_text}\"\n\n"
         f"And these categories: {categories}\n\n"
         "Classify the tweet into one of the categories. "
         "Respond strictly in JSON format as: "
-        "{\"category\": <chosen_category_or_None>, \"confidence\": <confidence_score(between 0 and 1 eg 0.94)>} "
-        "If the tweet does not fit any category, set category to null and confidence to a percentage. "
+        "{\"category\": <chosen_category_or_null>, \"confidence\": <confidence_score (between 0 and 1, e.g., 0.94)>} "
+        "If the tweet does not fit any category, set category to null. "
         "Do not return anything except the JSON."
     )
-    client=genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-    response = client.models.generate_content(
-    model='gemini-2.0-flash', contents=prompt
-    )        
-    # sample='''```json
-    # {"category": "Critical Care", "confidence": 0.95}
-    # ```'''
-    return eval(response.text[7:-3].strip())
-    #return eval(sample[7:-3].strip())
+
+    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+    
+    model = genai.GenerativeModel('gemini-2.0-flash')
+    response = model.generate_content(prompt)
+    
+    try:
+        import json
+        return json.loads(response.text.strip().strip("```json").strip("```").strip())
+    except Exception as e:
+        print("Error parsing response:", response.text)
+        raise e
 
 def get_screen_ids():
     MONGODB_URI = os.getenv('MONGODB_URI')
