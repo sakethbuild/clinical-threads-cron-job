@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
 import requests
-from google import genai
+import google.generativeai as genai
 
 load_dotenv()
 
