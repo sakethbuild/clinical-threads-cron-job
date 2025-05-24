@@ -42,28 +42,30 @@ def fetch_last_20_tweets_for_all_users():
                         tweet_data = d['content']['itemContent']['tweet_results']['result']
                         legacy = tweet_data['legacy']
                         tweet_text = legacy['full_text']
-                        # Categorize the tweet
-                        category_data = categorize(tweet_text)
-                        # Prepare document
-                        doc = {
-                            "screen_name": tweet_data['core']['user_results']['result']['legacy']['screen_name'],
-                            "tweet_id": tweet_id,
-                            "tweet_text": tweet_text,
-                            "created_at": legacy['created_at'],
-                            "retweet_count": legacy.get('retweet_count', 0),
-                            "favorite_count": legacy.get('favorite_count', 0),
-                            "reply_count": legacy.get('reply_count', 0),
-                            "tweet_url": f"https://twitter.com/{tweet_data['core']['user_results']['result']['legacy']['screen_name']}/status/{tweet_id}",
-                            "category": category_data['category'],
-                            "avatar_url": tweet_data['core']['user_results']['result']['legacy'].get('profile_image_url_https', ''),
-                            "__v": 0,
-                            "rest_id": user_id,
-                            "flag": False,
-                            "tagging_confidence": category_data['confidence'],
-                        }
-                        # Insert the tweet into MongoDB
-                        tweets_collection.insert_one(doc)
-                        print(f"Inserted tweet: {tweet_text} with ID: {tweet_id}")
+                        if tweet_text[:2]=='RT':
+                            print('skippping cuz retweet')
+                        else:
+                            category_data = categorize(tweet_text)
+                            # Prepare document
+                            doc = {
+                                "screen_name": tweet_data['core']['user_results']['result']['legacy']['screen_name'],
+                                "tweet_id": tweet_id,
+                                "tweet_text": tweet_text,
+                                "created_at": legacy['created_at'],
+                                "retweet_count": legacy.get('retweet_count', 0),
+                                "favorite_count": legacy.get('favorite_count', 0),
+                                "reply_count": legacy.get('reply_count', 0),
+                                "tweet_url": f"https://twitter.com/{tweet_data['core']['user_results']['result']['legacy']['screen_name']}/status/{tweet_id}",
+                                "category": category_data['category'],
+                                "avatar_url": tweet_data['core']['user_results']['result']['legacy'].get('profile_image_url_https', ''),
+                                "__v": 0,
+                                "rest_id": user_id,
+                                "flag": False,
+                                "tagging_confidence": category_data['confidence'],
+                            }
+                            # Insert the tweet into MongoDB
+                            tweets_collection.insert_one(doc)
+                            print(f"Inserted tweet: {tweet_text} with ID: {tweet_id}")
                     else:
                         print('tweet already exists')
                 time.sleep(5)
