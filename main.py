@@ -26,7 +26,7 @@ def fetch_last_20_tweets_for_all_users():
     ids = get_screen_ids()
     #ids = ['876254212371369985']
     for user_id in ids:
-        url = f"https://twitter241.p.rapidapi.com/user-tweets?user={user_id}&count=20"
+        url = f"https://twitter241.p.rapidapi.com/user-tweets?user={user_id}&count=5"
         headers = {
             "x-rapidapi-host": "twitter241.p.rapidapi.com",
             "x-rapidapi-key": os.getenv('RAPID_API_KEY')
